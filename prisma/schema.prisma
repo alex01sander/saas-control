@@ -1,0 +1,16 @@
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+model Plan {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  priceCents  Int
+  interval    String   // 'month' ou 'year'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("plans") // Isso garante que a tabela no banco se chame 'plans' (minúsculo)
+}
