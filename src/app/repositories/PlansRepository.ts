@@ -19,12 +19,34 @@ class PlansRepository {
     })
     return plan
    }
+
+   async findById(id: string): Promise<Plan | null>{
+    const plan = await prisma.plan.findUnique({
+        where: {
+            id
+        }
+    })
+    return plan
+   }
    
    async create(data: Prisma.PlanCreateInput): Promise<Plan>{
     const plan = await prisma.plan.create({
         data
     })
     return plan
+   }
+
+   async update(id: string, data: Prisma.PlanUpdateInput): Promise<Plan>{
+    return await prisma.plan.update({
+        where: {id},
+        data
+    })
+   }
+
+   async delete(id: string): Promise<void>{
+    await prisma.plan.delete({
+        where: {id}
+    })
    }
 }
 
