@@ -6,17 +6,46 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
-
-
-
 model Plan {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  priceCents  Int
-  interval    String   // 'month' ou 'year'
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String         @id @default(uuid())
+  name          String         @unique
+  priceCents    Int
+  interval      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
 
-  @@map("plans") // Isso garante que a tabela no banco se chame 'plans' (minúsculo)
+  @@map("plans")
+}
+
+model User {
+  id           String @id @default(uuid())
+  name         String
+  email        String @unique
+  passwordHash String
+
+  stripeCustomerId String? @unique
+
+  subscription Subscription?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Subscription {
+  id     String @id @default(uuid())
+  status String @default("active")
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  planId String
+  plan   Plan   @relation(fields: [planId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subscriptions")
 }
