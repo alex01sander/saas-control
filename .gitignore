@@ -3,6 +3,7 @@ node_modules
 dist/
 build/
 docker-compose.override.yml
+.editorconfig
 
 
 
