@@ -25,10 +25,28 @@ class UserRepository {
         return User;
     }
 
+    async findById(id: string): Promise<User | null> {
+        const user = await prisma.user.findUnique({
+            where: {
+                id,
+            },
+        });
+        return user;
+    }
+
     async create(data: Prisma.UserCreateInput): Promise<User> {
         const user = await prisma.user.create({
             data,
         });
+        return user;
+    }
+
+    async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+        const user = await prisma.user.update({
+            where: { id },
+            data,
+        });
+
         return user;
     }
 }

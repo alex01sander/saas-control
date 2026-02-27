@@ -18,6 +18,20 @@ class UsersController {
 
         return res.status(201).json(user);
     }
+
+    async update(req: Request, res: Response) {
+        const { name, email, old_password, password } = req.body;
+        const user_id = req.user.id;
+
+        const user = await UsersService.update(user_id, {
+            name,
+            email,
+            old_password,
+            password,
+        });
+
+        return res.json(user);
+    }
 }
 
 export default new UsersController();
