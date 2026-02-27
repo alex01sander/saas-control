@@ -17,5 +17,7 @@ router.put("/users", UsersController.update);
 router.get("/plans", PlansController.index);
 router.post("/plans", PlansController.store);
 router.put("/plans/:id", PlansController.update);
+router.put("/plans/:id", PlansController.update);
+router.delete("/plans/:id", PlansController.delete);
 
 export default router;
