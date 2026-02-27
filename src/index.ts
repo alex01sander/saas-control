@@ -10,11 +10,19 @@ const port = process.env["PORT"] || 3000;
 app.use(express.json());
 app.use(router);
 
-app.use((error: AppError, req: Request, res: Response, next: NextFunction) => {
-    console.error(error);
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+    if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+            status: "error",
+            message: error.message,
+        });
+    }
 
-    return res.status(error.statusCode || 500).json({
-        message: error.message || "Internal server error",
+    console.error("❌ Erro não tratado:", error);
+
+    return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
     });
 });
 
