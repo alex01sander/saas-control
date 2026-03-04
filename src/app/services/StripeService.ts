@@ -37,6 +37,7 @@ class StripeService {
             cancel_url: `${process.env.APP_URL}/cancel`,
             metadata: {
                 userId,
+                planId,
             },
         });
 
