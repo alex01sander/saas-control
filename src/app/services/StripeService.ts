@@ -12,7 +12,6 @@ class StripeService {
         priceCents: number,
         interval: string,
         planId: string,
-        
     ) {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -39,6 +38,15 @@ class StripeService {
                 userId,
                 planId,
             },
+        });
+
+        return session.url;
+    }
+
+    async createPortalSession(customerId: string) {
+        const session = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: `${process.env.APP_URL}/dashboard`,
         });
 
         return session.url;

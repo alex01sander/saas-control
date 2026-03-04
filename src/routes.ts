@@ -12,17 +12,14 @@ import { ensureSubscribed } from "./middlewares/ensureSubscribed.js";
 
 const router = Router();
 
-
 router.post("/sessions", SessionsController.store);
 router.post("/users", UsersController.store);
-
 
 router.post(
     "/webhooks/stripe",
     express.raw({ type: "application/json" }),
     StripeWebhookController.handle,
 );
-
 
 router.use(ensureAuthenticated);
 
@@ -37,10 +34,9 @@ router.delete("/plans/:id", PlansController.delete);
 router.post("/subscriptions", SubscriptionController.store);
 router.get("/subscriptions/me", SubscriptionController.show);
 
-
 router.get("/premium-content", ensureSubscribed, (req, res) => {
-    return res.json({ 
-        message: "Bem-vindo à área VIP! Você tem uma assinatura ativa." 
+    return res.json({
+        message: "Bem-vindo à área VIP! Você tem uma assinatura ativa.",
     });
 });
 

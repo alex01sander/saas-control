@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import Stripe from "stripe";
 import SubscriptionRepository from "../repositories/SubscriptionRepository.js";
+import UsersRepository from "../repositories/UsersRepository.js";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -27,17 +28,23 @@ class StripeWebhookController {
             const userId = session.metadata?.userId;
             const planId = session.metadata?.planId;
 
+            const stripeCustomerId = session.customer as string;
+
             if (userId && planId) {
                 await SubscriptionRepository.update(userId, {
                     status: "ACTIVE",
                     planId: planId,
                 });
 
-                console.log(`✅ Assinatura ativada para o usuário: ${userId}`);
+                await UsersRepository.update(userId, {
+                    stripeCustomerId: stripeCustomerId,
+                });
+
+                console.log(
+                    `✅ Assinatura e CustomerID (${stripeCustomerId}) atualizados para o usuário: ${userId}`,
+                );
             }
         }
-
-        return res.json({ received: true });
     }
 }
 
