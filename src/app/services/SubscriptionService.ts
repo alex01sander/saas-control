@@ -23,6 +23,7 @@ class SubscriptionService {
             plan.name,
             plan.priceCents,
             plan.interval,
+            plan.id,
         );
 
         return { checkoutUrl };

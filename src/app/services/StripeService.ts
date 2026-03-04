@@ -11,6 +11,8 @@ class StripeService {
         planName: string,
         priceCents: number,
         interval: string,
+        planId: string,
+        
     ) {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
