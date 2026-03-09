@@ -15,10 +15,11 @@ import {
     updateUserSchema,
 } from "./validators/UserValidator.js";
 import { createPlanSchema } from "./validators/PlanValidator.js";
+import { createSessionSchema } from "./validators/SessionValidator.js";
 
 const router = Router();
 
-router.post("/sessions", SessionsController.store);
+router.post("/sessions", validate(createSessionSchema), SessionsController.store);
 router.post("/users", validate(createUserSchema), UsersController.store);
 
 router.post(
