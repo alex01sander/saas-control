@@ -8,27 +8,17 @@ class UsersController {
     }
 
     async store(req: Request, res: Response) {
-        const { name, email, password } = req.body;
-
-        const user = await UsersService.create({
-            name,
-            email,
-            password,
-        });
+        
+        const user = await UsersService.create(req.body);
 
         return res.status(201).json(user);
     }
 
     async update(req: Request, res: Response) {
-        const { name, email, old_password, password } = req.body;
         const user_id = req.user.id;
-
-        const user = await UsersService.update(user_id, {
-            name,
-            email,
-            old_password,
-            password,
-        });
+        
+       
+        const user = await UsersService.update(user_id, req.body);
 
         return res.json(user);
     }
