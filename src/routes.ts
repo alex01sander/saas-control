@@ -9,11 +9,13 @@ import StripeWebhookController from "./app/controllers/StripeWebhookController.j
 
 import { ensureAuthenticated } from "./middlewares/ensureAuthenticated.js";
 import { ensureSubscribed } from "./middlewares/ensureSubscribed.js";
+import { validate } from "./middlewares/validateRequest.js";
+import { createUserSchema, updateUserSchema } from "./validators/UserValidator.js";
 
 const router = Router();
 
 router.post("/sessions", SessionsController.store);
-router.post("/users", UsersController.store);
+router.post("/users", validate(createUserSchema), UsersController.store);
 
 router.post(
     "/webhooks/stripe",
@@ -24,7 +26,7 @@ router.post(
 router.use(ensureAuthenticated);
 
 router.get("/users", UsersController.index);
-router.put("/users", UsersController.update);
+router.put("/users", ensureAuthenticated, validate(updateUserSchema), UsersController.update);
 
 router.get("/plans", PlansController.index);
 router.post("/plans", PlansController.store);
