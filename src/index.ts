@@ -3,9 +3,12 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import router from "./routes.js";
 import AppError from "./errors/AppError.js";
+import cors from "cors";
 
 const app = express();
 const port = process.env["PORT"] || 3000;
+
+app.use(cors());
 
 app.use((req, res, next) => {
     if (req.originalUrl === "/webhooks/stripe") {
