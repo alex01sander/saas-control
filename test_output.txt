@@ -1,0 +1,64 @@
+
+> saas-control@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles
+
+(node:15272) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL src/__tests__/User.test.ts
+  ● User Integration Tests › should be able to create a new user
+
+    PrismaClientKnownRequestError: 
+    Invalid `prisma.user.deleteMany()` invocation in
+    C:\Users\alexs\saas-control\src\__tests__\User.test.ts:11:23
+
+       8 // 'beforeAll' executa ANTES de todos os testes deste bloco.
+       9 // Aqui limpamos o banco para evitar erro de email duplicado.
+      10 beforeAll(async () => {
+    → 11   await prisma.user.deleteMany(
+
+    [0m [90m  9 |[39m   [90m// Aqui limpamos o banco para evitar erro de email duplicado.[39m
+     [90m 10 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 11 |[39m     [36mawait[39m prisma[33m.[39muser[33m.[39mdeleteMany()[33m;[39m
+     [90m    |[39m     [31m[1m^[22m[39m
+     [90m 12 |[39m   })[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m   [90m// 'it' ou 'test' define o que esperamos que aconteça[39m[0m
+
+      at zr.handleRequestError (node_modules/@prisma/client/src/runtime/RequestHandler.ts:237:13)
+      at zr.handleAndLogRequestError (node_modules/@prisma/client/src/runtime/RequestHandler.ts:183:12)
+      at zr.request (node_modules/@prisma/client/src/runtime/RequestHandler.ts:152:12)
+      at a (node_modules/@prisma/client/src/runtime/getPrismaClient.ts:808:24)
+      at Object.<anonymous> (src/__tests__/User.test.ts:11:5)
+
+  ● User Integration Tests › should not be able to create a user with an existing email
+
+    PrismaClientKnownRequestError: 
+    Invalid `prisma.user.deleteMany()` invocation in
+    C:\Users\alexs\saas-control\src\__tests__\User.test.ts:11:23
+
+       8 // 'beforeAll' executa ANTES de todos os testes deste bloco.
+       9 // Aqui limpamos o banco para evitar erro de email duplicado.
+      10 beforeAll(async () => {
+    → 11   await prisma.user.deleteMany(
+
+    [0m [90m  9 |[39m   [90m// Aqui limpamos o banco para evitar erro de email duplicado.[39m
+     [90m 10 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 11 |[39m     [36mawait[39m prisma[33m.[39muser[33m.[39mdeleteMany()[33m;[39m
+     [90m    |[39m     [31m[1m^[22m[39m
+     [90m 12 |[39m   })[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m   [90m// 'it' ou 'test' define o que esperamos que aconteça[39m[0m
+
+      at zr.handleRequestError (node_modules/@prisma/client/src/runtime/RequestHandler.ts:237:13)
+      at zr.handleAndLogRequestError (node_modules/@prisma/client/src/runtime/RequestHandler.ts:183:12)
+      at zr.request (node_modules/@prisma/client/src/runtime/RequestHandler.ts:152:12)
+      at a (node_modules/@prisma/client/src/runtime/getPrismaClient.ts:808:24)
+      at Object.<anonymous> (src/__tests__/User.test.ts:11:5)
+
+PASS src/__tests__/AppError.test.ts
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       2 failed, 2 passed, 4 total
+Snapshots:   0 total
+Time:        1.223 s, estimated 2 s
+Ran all test suites.
