@@ -4,6 +4,8 @@ import type { NextFunction, Request, Response } from "express";
 import router from "./routes.js";
 import AppError from "./errors/AppError.js";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger.js";
 
 const app = express();
 const port = process.env["PORT"] || 3000;
@@ -17,6 +19,7 @@ app.use((req, res, next) => {
         express.json()(req, res, next);
     }
 });
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(router);
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
