@@ -4,24 +4,22 @@ import PlansRepository from "../repositories/PlansRepository.js";
 
 interface IPlanCreate {
     name: string;
-    price: number;
+    priceCents: number;
     interval: "month" | "year";
 }
 
 interface IPlanUpdate {
     name?: string;
-    price?: number;
+    priceCents?: number;
     interval?: "month" | "year";
 }
 
 class PlansService {
-    async create({ name, price, interval }: IPlanCreate) {
+    async create({ name, priceCents, interval }: IPlanCreate): Promise<Plan> {
         const planExists = await PlansRepository.findByName(name);
         if (planExists) {
             throw new AppError("Plan already exists", 400);
         }
-
-        const priceCents = Math.round(price * 100);
 
         const plan = await PlansRepository.create({
             name,
@@ -35,7 +33,7 @@ class PlansService {
         return await PlansRepository.findAll();
     }
 
-    async update(id: string, { name, price, interval }: IPlanUpdate) {
+    async update(id: string, { name, priceCents, interval }: IPlanUpdate): Promise<Plan> {
         const plan = await PlansRepository.findById(id);
         if (!plan) {
             throw new AppError("Plan not found", 404);
@@ -52,15 +50,11 @@ class PlansService {
             }
         }
 
-        const priceCents = price ? Math.round(price * 100) : undefined;
-
         const updateData: Prisma.PlanUpdateInput = {};
 
         if (name) updateData.name = name;
         if (interval) updateData.interval = interval;
-        if (price !== undefined) {
-            updateData.priceCents = Math.round(price * 100);
-        }
+        if (priceCents !== undefined) updateData.priceCents = priceCents;
 
         const updatedPlan = await PlansRepository.update(id, updateData);
         return updatedPlan;

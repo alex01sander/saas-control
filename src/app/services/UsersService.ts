@@ -8,12 +8,26 @@ interface IUser {
     password: string;
 }
 
+interface IUserResponse {
+    id: string;
+    name: string;
+    email: string;
+    createdAt?: Date;
+}
+
+interface IUserUpdate {
+    name?: string;
+    email?: string;
+    old_password?: string;
+    password?: string;
+}
+
 class UsersService {
-    async listAll(): Promise<any> {
+    async listAll(): Promise<IUserResponse[]> {
         return await UsersRepository.findAll();
     }
 
-    async create({ name, email, password }: IUser): Promise<any> {
+    async create({ name, email, password }: IUser): Promise<IUserResponse> {
         const emailExist = await UsersRepository.findByEmail(email);
 
         if (emailExist) {
@@ -28,7 +42,7 @@ class UsersService {
             passwordHash,
         });
 
-        const userWithoutPassword = {
+        const userWithoutPassword: IUserResponse = {
             id: user.id,
             name: user.name,
             email: user.email,
@@ -38,7 +52,7 @@ class UsersService {
         return userWithoutPassword;
     }
 
-    async update(id: string, { name, email, old_password, password }: any) {
+    async update(id: string, { name, email, old_password, password }: IUserUpdate): Promise<IUserResponse> {
         const user = await UsersRepository.findById(id);
 
         if (!user) {

@@ -1,4 +1,7 @@
 import Stripe from "stripe";
+import SubscriptionRepository from "../repositories/SubscriptionRepository.js";
+import UsersRepository from "../repositories/UsersRepository.js";
+import AppError from "../../errors/AppError.js";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string, {
     apiVersion: "2023-10-16" as any,
@@ -38,6 +41,42 @@ class StripeService {
                 userId,
                 planId,
             },
+        });
+
+        return session.url;
+    }
+
+    async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+        const userId = session.metadata?.userId;
+        const planId = session.metadata?.planId;
+        const stripeCustomerId = session.customer as string;
+
+        if (userId && planId) {
+            await SubscriptionRepository.update(userId, {
+                status: "ACTIVE",
+                planId: planId,
+            });
+
+            await UsersRepository.update(userId, {
+                stripeCustomerId: stripeCustomerId,
+            });
+
+            console.log(
+                `✅ Assinatura e CustomerID (${stripeCustomerId}) atualizados para o usuário: ${userId}`,
+            );
+        }
+    }
+
+    async getPortalSessionUrl(userId: string) {
+        const user = await UsersRepository.findById(userId);
+
+        if (!user?.stripeCustomerId) {
+            throw new AppError("User does not have a Stripe Customer ID", 400);
+        }
+
+        const session = await stripe.billingPortal.sessions.create({
+            customer: user.stripeCustomerId,
+            return_url: `${process.env.APP_URL}/dashboard`,
         });
 
         return session.url;

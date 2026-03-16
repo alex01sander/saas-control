@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import Stripe from "stripe";
-import SubscriptionRepository from "../repositories/SubscriptionRepository.js";
-import UsersRepository from "../repositories/UsersRepository.js";
+import StripeService from "../services/StripeService.js";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -24,27 +23,10 @@ class StripeWebhookController {
 
         if (event.type === "checkout.session.completed") {
             const session = event.data.object as Stripe.Checkout.Session;
-
-            const userId = session.metadata?.userId;
-            const planId = session.metadata?.planId;
-
-            const stripeCustomerId = session.customer as string;
-
-            if (userId && planId) {
-                await SubscriptionRepository.update(userId, {
-                    status: "ACTIVE",
-                    planId: planId,
-                });
-
-                await UsersRepository.update(userId, {
-                    stripeCustomerId: stripeCustomerId,
-                });
-
-                console.log(
-                    `✅ Assinatura e CustomerID (${stripeCustomerId}) atualizados para o usuário: ${userId}`,
-                );
-            }
+            await StripeService.handleCheckoutSessionCompleted(session);
         }
+
+        return res.status(200).json({ received: true });
     }
 }
 

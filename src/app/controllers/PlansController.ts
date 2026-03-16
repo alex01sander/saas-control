@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import PlansService from "../services/PlansService.js";
-import PlansRepository from "../repositories/PlansRepository.js";
 
 class PlansController {
     async index(req: Request, res: Response) {
@@ -9,13 +8,7 @@ class PlansController {
     }
 
     async store(req: Request, res: Response) {
-        const { name, priceCents, interval } = req.body;
-
-        const plan = await PlansRepository.create({
-            name,
-            priceCents,
-            interval,
-        });
+        const plan = await PlansService.create(req.body);
 
         return res.status(201).json(plan);
     }
@@ -23,9 +16,7 @@ class PlansController {
     async update(req: Request, res: Response) {
         const { id } = req.params as { id: string };
 
-        const data = req.body;
-
-        const plan = await PlansRepository.update(id, data);
+        const plan = await PlansService.update(id, req.body);
 
         return res.json(plan);
     }
