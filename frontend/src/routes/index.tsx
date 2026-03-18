@@ -2,11 +2,26 @@ import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import { RouteGuard } from "./RouteGuard";
 
 import { AuthLayout } from "../layouts/AuthLayout";
+import { AppLayout } from "../layouts/AppLayout";
 
 import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
 
-const DashboardPage = () => <div>Dashboard (Conteúdo Principal)</div>;
+const DashboardPage = () => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        Conteúdo do Dashboard
+    </div>
+);
+const ProfilePage = () => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        Configurações do Perfil
+    </div>
+);
+const PlansPage = () => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        Gerenciamento de Assinatura
+    </div>
+);
 
 export function AppRoutes() {
     return (
@@ -20,7 +35,12 @@ export function AppRoutes() {
                 </Route>
 
                 <Route element={<RouteGuard isPrivate />}>
-                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route element={<AppLayout />}>
+                        {" "}
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/plans" element={<PlansPage />} />
+                    </Route>
                 </Route>
 
                 <Route path="*" element={<Navigate to="/dashboard" />} />
