@@ -1,31 +1,27 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000", 
+    baseURL: "http://localhost:3000",
 });
-
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("@SaaSControl:token");
+    const token = localStorage.getItem("@SaaSControl:token");
 
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+    if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
 
-  return config;
+    return config;
 });
 
-
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      
-      localStorage.removeItem("@SaaSControl:token");
-      window.location.href = "/login";
-    }
-    
-    
-    return Promise.reject(error);
-  }
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem("@SaaSControl:token");
+            window.location.href = "/login";
+        }
+
+        return Promise.reject(error);
+    },
 );
