@@ -6,6 +6,8 @@ import { AppLayout } from "../layouts/AppLayout";
 
 import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
+import { SuccessPage } from "../pages/Success";
+import { CancelPage } from "../pages/Cancel";
 
 const DashboardPage = () => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -38,8 +40,9 @@ export function AppRoutes() {
                     <Route element={<AppLayout />}>
                         {" "}
                         <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/plans" element={<PlansPage />} />
+                        <Route path="/success" element={<SuccessPage />} />
+                        <Route path="/cancel" element={<CancelPage />} />
                     </Route>
                 </Route>
 
