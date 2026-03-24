@@ -14,11 +14,8 @@ const DashboardPage = () => (
         Conteúdo do Dashboard
     </div>
 );
-const ProfilePage = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
-        Configurações do Perfil
-    </div>
-);
+import { ProfilePage } from "../pages/Profile";
+
 const PlansPage = () => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         Gerenciamento de Assinatura
@@ -40,6 +37,7 @@ export function AppRoutes() {
                     <Route element={<AppLayout />}>
                         {" "}
                         <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/plans" element={<PlansPage />} />
                         <Route path="/success" element={<SuccessPage />} />
                         <Route path="/cancel" element={<CancelPage />} />
