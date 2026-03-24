@@ -10,15 +10,10 @@ import { DashboardPage } from "../pages/Dashboard";
 import { AnalyticsPage } from "../pages/Analytics";
 import { SuccessPage } from "../pages/Success";
 import { CancelPage } from "../pages/Cancel";
-
+import { PlansPage } from "../pages/Plans";
 
 import { ProfilePage } from "../pages/Profile";
 
-const PlansPage = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
-        Gerenciamento de Assinatura
-    </div>
-);
 
 export function AppRoutes() {
     return (
