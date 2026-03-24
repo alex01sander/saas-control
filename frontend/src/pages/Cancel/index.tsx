@@ -1,34 +1,37 @@
 import { useNavigate } from "react-router-dom";
-import { XCircle } from "lucide-react";
+import { XCircle, AlertCircle, ArrowLeft } from "lucide-react";
 
 export function CancelPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <div className="bg-red-100 p-4 rounded-full mb-6">
-                <XCircle size={64} className="text-red-600" />
+        <div className="flex flex-col items-center justify-center min-h-[70vh] text-center animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="bg-red-50 p-6 rounded-full mb-8">
+                <XCircle size={80} className="text-red-500" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">
-                Ops! Algo aconteceu.
+            
+            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+                Pagamento Interrompido
             </h1>
-            <p className="text-gray-600 mt-4 max-w-md">
-                O processo de pagamento foi cancelado. Se houve algum problema
-                com seu cartão ou dúvida sobre o plano, nossa equipe está à
-                disposição.
+            <p className="text-lg text-gray-600 mt-4 max-w-lg leading-relaxed font-sans">
+                O processo de pagamento não foi concluído. Se você teve algum problema
+                técnico ou mudou de ideia, pode tentar novamente quando desejar.
             </p>
-            <div className="flex gap-4 mt-8">
+
+            <div className="mt-12 flex flex-col sm:flex-row gap-4">
                 <button
                     onClick={() => navigate("/plans")}
-                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700"
+                    className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-indigo-700 active:scale-95 transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2"
                 >
-                    Tentar Novamente
+                    <AlertCircle size={20} />
+                    Ver Planos Novamente
                 </button>
                 <button
                     onClick={() => navigate("/dashboard")}
-                    className="text-gray-500 px-6 py-2 hover:underline"
+                    className="bg-white text-gray-600 border border-gray-200 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
-                    Voltar ao início
+                    <ArrowLeft size={20} />
+                    Voltar ao Dashboard
                 </button>
             </div>
         </div>
