@@ -6,14 +6,12 @@ import { AppLayout } from "../layouts/AppLayout";
 
 import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
+import { DashboardPage } from "../pages/Dashboard";
+import { AnalyticsPage } from "../pages/Analytics";
 import { SuccessPage } from "../pages/Success";
 import { CancelPage } from "../pages/Cancel";
 
-const DashboardPage = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
-        Conteúdo do Dashboard
-    </div>
-);
+
 import { ProfilePage } from "../pages/Profile";
 
 const PlansPage = () => (
@@ -37,6 +35,7 @@ export function AppRoutes() {
                     <Route element={<AppLayout />}>
                         {" "}
                         <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/analytics" element={<AnalyticsPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/plans" element={<PlansPage />} />
                         <Route path="/success" element={<SuccessPage />} />
