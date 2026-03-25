@@ -1,12 +1,14 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import { api } from "../lib/axios";
 
+export type UserRole = "ADMIN" | "CLIENT";
+
 interface User {
     id: string;
     name: string;
     email: string;
     subscriptionStatus?: string;
-    role: "ADMIN" | "CLIENT";
+    role: UserRole;
 }
 
 interface AuthContextData {

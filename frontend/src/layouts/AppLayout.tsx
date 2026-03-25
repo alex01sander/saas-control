@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { BarChart3, Users, User, CreditCard, LogOut } from "lucide-react";
+import { BarChart3, Users, User, CreditCard, LogOut, DollarSign, BookOpen } from "lucide-react";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
@@ -31,17 +31,29 @@ export function AppLayout() {
                     </NavLink>
                     
                     {user?.role === "ADMIN" && (
-                        <NavLink to="/admin/customers" className={navLinkClass}>
-                            <Users size={18} />
-                            <span>Clientes</span>
-                        </NavLink>
+                        <>
+                            <NavLink to="/admin/customers" className={navLinkClass}>
+                                <Users size={18} />
+                                <span>Clientes</span>
+                            </NavLink>
+                            <NavLink to="/admin/finance" className={navLinkClass}>
+                                <DollarSign size={18} />
+                                <span>Financeiro</span>
+                            </NavLink>
+                        </>
                     )}
 
                     {user?.role === "CLIENT" && (
-                        <NavLink to="/plans" className={navLinkClass}>
-                            <CreditCard size={18} />
-                            <span>Assinatura</span>
-                        </NavLink>
+                        <>
+                            <NavLink to="/app/ebook" className={navLinkClass}>
+                                <BookOpen size={18} />
+                                <span>Ebook</span>
+                            </NavLink>
+                            <NavLink to="/plans" className={navLinkClass}>
+                                <CreditCard size={18} />
+                                <span>Assinatura</span>
+                            </NavLink>
+                        </>
                     )}
 
                     <NavLink to="/profile" className={navLinkClass}>

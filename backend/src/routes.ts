@@ -8,6 +8,7 @@ import SubscriptionController from "./app/controllers/SubscriptionController.js"
 import StripeWebhookController from "./app/controllers/StripeWebhookController.js";
 
 import { ensureAuthenticated } from "./middlewares/ensureAuthenticated.js";
+import { ensureAdmin } from "./middlewares/ensureAdmin.js";
 import { ensureSubscribed } from "./middlewares/ensureSubscribed.js";
 import { validate } from "./middlewares/validateRequest.js";
 import {
@@ -95,7 +96,7 @@ router.patch("/users/role", UsersController.toggleRole);
  *       200:
  *         description: Lista de usuários
  */
-router.get("/users", UsersController.index);
+router.get("/users", ensureAdmin, UsersController.index);
 
 /**
  * @swagger
@@ -167,16 +168,18 @@ router.get("/plans", PlansController.index);
 router.post(
     "/plans",
     ensureAuthenticated,
+    ensureAdmin,
     validate(createPlanSchema),
     PlansController.store,
 );
 router.put(
     "/plans/:id",
     ensureAuthenticated,
+    ensureAdmin,
     validate(createPlanSchema.partial()),
     PlansController.update,
 );
-router.delete("/plans/:id", PlansController.delete);
+router.delete("/plans/:id", ensureAdmin, PlansController.delete);
 
 /**
  * @swagger

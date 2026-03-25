@@ -33,7 +33,7 @@ export function AppRoutes() {
                         <Route
                             path="/admin/customers"
                             element={
-                                <RouteGuard isPrivate requiredRole="ADMIN">
+                                <RouteGuard isPrivate roleRequired="ADMIN">
                                     <CustomerManagement />
                                 </RouteGuard>
                             }
@@ -43,7 +43,7 @@ export function AppRoutes() {
                         <Route
                             path="/plans"
                             element={
-                                <RouteGuard isPrivate requiredRole="CLIENT">
+                                <RouteGuard isPrivate roleRequired="CLIENT">
                                     <PlansPage />
                                 </RouteGuard>
                             }
