@@ -5,7 +5,8 @@ interface User {
     id: string;
     name: string;
     email: string;
-    subscriptionStatus?: "ACTIVE" | "PENDING" | "CANCELED";
+    subscriptionStatus?: string;
+    role: "ADMIN" | "CLIENT";
 }
 
 interface AuthContextData {

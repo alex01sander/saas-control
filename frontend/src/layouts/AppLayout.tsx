@@ -29,15 +29,23 @@ export function AppLayout() {
                     <NavLink to="/dashboard" className={navLinkClass}>
                         <BarChart3 size={18} /> Dashboard
                     </NavLink>
-                    <NavLink to="/admin/customers" className={navLinkClass}>
-                        <Users size={18} />
-                        <span>Clientes</span>
-                    </NavLink>
+                    
+                    {user?.role === "ADMIN" && (
+                        <NavLink to="/admin/customers" className={navLinkClass}>
+                            <Users size={18} />
+                            <span>Clientes</span>
+                        </NavLink>
+                    )}
+
+                    {user?.role === "CLIENT" && (
+                        <NavLink to="/plans" className={navLinkClass}>
+                            <CreditCard size={18} />
+                            <span>Assinatura</span>
+                        </NavLink>
+                    )}
+
                     <NavLink to="/profile" className={navLinkClass}>
                         <User size={18} /> Perfil
-                    </NavLink>
-                    <NavLink to="/plans" className={navLinkClass}>
-                        <CreditCard size={18} /> Assinatura
                     </NavLink>
                 </nav>
 

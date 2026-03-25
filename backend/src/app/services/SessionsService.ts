@@ -16,6 +16,7 @@ interface IResponse {
         name: string;
         email: string;
         subscriptionStatus: string;
+        role: string;
     };
     token: string;
 }
@@ -50,6 +51,7 @@ class SessionsService {
                 name: user.name,
                 email: user.email,
                 subscriptionStatus: subscription?.status || "PENDING",
+                role: user.role,
             },
             token,
         };

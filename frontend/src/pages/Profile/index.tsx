@@ -1,13 +1,14 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthContext } from '../../contexts/AuthContext';
 import { profileFormSchema, ProfileFormData } from './schema';
 import { api } from '../../lib/axios';
-import { User, ShieldCheck, Mail, Camera, Save } from 'lucide-react';
+import { User, ShieldCheck, Mail, Camera, Save, RefreshCcw } from 'lucide-react';
 
 export function ProfilePage() {
-  const { user } = useContext(AuthContext);
+  const { user, refreshUser } = useContext(AuthContext);
+  const [isToggling, setIsToggling] = useState(false);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
@@ -19,10 +20,23 @@ export function ProfilePage() {
 
   async function handleUpdateProfile(data: ProfileFormData) {
     try {
-      await api.put('/users/profile', data);
+      await api.put('/users', data);
       alert('Perfil atualizado com sucesso!');
+      await refreshUser();
     } catch (error) {
       alert('Erro ao atualizar perfil.');
+    }
+  }
+
+  async function handleToggleRole() {
+    try {
+      setIsToggling(true);
+      await api.patch('/users/role');
+      await refreshUser();
+    } catch (error) {
+      alert('Erro ao alternar papel.');
+    } finally {
+      setIsToggling(false);
     }
   }
 
@@ -40,7 +54,7 @@ export function ProfilePage() {
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
             <div className="relative group">
-              <div className="h-24 w-24 bg-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-200">
+              <div className="h-24 w-24 bg-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-200 transition-all group-hover:bg-indigo-700">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
               <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md border border-gray-100 text-gray-600 hover:text-indigo-600 transition-colors">
@@ -49,10 +63,32 @@ export function ProfilePage() {
             </div>
             <h2 className="mt-4 text-xl font-bold text-gray-900">{user?.name}</h2>
             <p className="text-sm text-gray-500">{user?.email}</p>
-            <div className="mt-6 w-full pt-6 border-t border-gray-50 text-left">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Status da Assinatura</p>
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                {user?.subscriptionStatus || 'ATIVO'}
+            
+            <div className="mt-6 w-full pt-6 border-t border-gray-50 text-left space-y-4">
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Papel no Sistema</p>
+                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                  <span className="text-sm font-bold text-gray-700">{user?.role}</span>
+                  <button 
+                    onClick={handleToggleRole}
+                    disabled={isToggling}
+                    className="p-1.5 bg-white rounded-lg shadow-sm border border-gray-100 text-indigo-600 hover:bg-indigo-50 transition-all disabled:opacity-50"
+                    title="Alternar Admin/Cliente"
+                  >
+                    <RefreshCcw size={14} className={isToggling ? 'animate-spin' : ''} />
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Status da Assinatura</p>
+                <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                  user?.subscriptionStatus === 'ACTIVE' 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-amber-100 text-amber-700'
+                }`}>
+                  {user?.subscriptionStatus || 'PENDENTE'}
+                </div>
               </div>
             </div>
           </div>

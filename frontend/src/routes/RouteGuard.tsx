@@ -5,12 +5,14 @@ import { AuthContext } from "../contexts/AuthContext";
 interface RouteGuardProps {
     isPrivate?: boolean;
     isSubscriptionRequired?: boolean;
+    requiredRole?: "ADMIN" | "CLIENT";
     children?: React.ReactNode;
 }
 
 export function RouteGuard({
     isPrivate = false,
     isSubscriptionRequired = false,
+    requiredRole,
     children,
 }: RouteGuardProps) {
     const { user, isAuthenticated, loading } = useContext(AuthContext);
@@ -29,6 +31,10 @@ export function RouteGuard({
 
     if (isSubscriptionRequired && user?.subscriptionStatus !== "ACTIVE") {
         return <Navigate to="/plans" replace />;
+    }
+
+    if (requiredRole && user?.role !== requiredRole) {
+        return <Navigate to="/dashboard" replace />;
     }
 
     return children ? <>{children}</> : <Outlet />;

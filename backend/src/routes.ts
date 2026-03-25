@@ -81,6 +81,7 @@ router.post(
 router.use(ensureAuthenticated);
 
 router.get("/me", UsersController.me);
+router.patch("/users/role", UsersController.toggleRole);
 
 /**
  * @swagger

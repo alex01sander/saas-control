@@ -40,7 +40,27 @@ class UsersController {
             name: user.name,
             email: user.email,
             subscriptionStatus: subscription?.status || "PENDING",
+            role: user.role,
         });
+    }
+
+    async toggleRole(req: Request, res: Response) {
+        if (process.env.NODE_ENV === "production") {
+            return res.status(403).json({ message: "This feature is only available in development mode" });
+        }
+
+        const userId = req.user.id;
+        const user = await UsersRepository.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const newRole = user.role === "ADMIN" ? "CLIENT" : "ADMIN";
+
+        await UsersRepository.update(userId, { role: newRole });
+
+        return res.json({ role: newRole });
     }
 }
 

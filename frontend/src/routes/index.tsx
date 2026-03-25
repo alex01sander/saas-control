@@ -32,11 +32,22 @@ export function AppRoutes() {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route
                             path="/admin/customers"
-                            element={<CustomerManagement />}
+                            element={
+                                <RouteGuard isPrivate requiredRole="ADMIN">
+                                    <CustomerManagement />
+                                </RouteGuard>
+                            }
                         />
                         <Route path="/profile" element={<ProfilePage />} />
 
-                        <Route path="/plans" element={<PlansPage />} />
+                        <Route
+                            path="/plans"
+                            element={
+                                <RouteGuard isPrivate requiredRole="CLIENT">
+                                    <PlansPage />
+                                </RouteGuard>
+                            }
+                        />
                         <Route path="/success" element={<SuccessPage />} />
                         <Route path="/cancel" element={<CancelPage />} />
                     </Route>
