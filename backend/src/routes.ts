@@ -80,6 +80,8 @@ router.post(
 
 router.use(ensureAuthenticated);
 
+router.get("/me", UsersController.me);
+
 /**
  * @swagger
  * /users:
@@ -198,6 +200,7 @@ router.delete("/plans/:id", PlansController.delete);
  *         description: checkoutUrl para pagamento
  */
 router.post("/subscriptions", SubscriptionController.store);
+router.post("/subscriptions/force-active", SubscriptionController.forceActive);
 
 /**
  * @swagger

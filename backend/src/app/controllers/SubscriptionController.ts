@@ -11,12 +11,20 @@ class SubscriptionController {
             return res.status(400).json({ message: "Plan ID is required" });
         }
 
-        const subscription = await SubscriptionService.subscribe({
-            userId,
-            planId,
-        });
+        try {
+            const subscription = await SubscriptionService.subscribe({
+                userId,
+                planId,
+            });
 
-        return res.status(201).json(subscription);
+            return res.status(201).json(subscription);
+        } catch (error: any) {
+            console.error("❌ Erro ao criar checkout:", error.message || error);
+            return res.status(500).json({
+                status: "error",
+                message: error.message || "Erro ao criar sessão de checkout",
+            });
+        }
     }
 
     async show(req: Request, res: Response) {
@@ -34,6 +42,24 @@ class SubscriptionController {
         const portalUrl = await StripeService.getPortalSessionUrl(userId);
 
         return res.json({ url: portalUrl });
+    }
+
+    async forceActive(req: Request, res: Response) {
+        // Only allow in development
+        if (process.env.NODE_ENV === "production") {
+            return res.status(403).json({ message: "Forbidden in production" });
+        }
+
+        const userId = req.user.id;
+        const { planId } = req.body;
+
+        if (!planId) {
+            return res.status(400).json({ message: "Plan ID is required" });
+        }
+
+        await SubscriptionService.forceActivate(userId, planId);
+
+        return res.json({ message: "Subscription activated successfully (DEV MODE)" });
     }
 }
 

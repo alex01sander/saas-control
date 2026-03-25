@@ -2,6 +2,7 @@ import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import AppError from "../../errors/AppError.js";
 import UsersRepository from "../repositories/UsersRepository.js";
+import SubscriptionRepository from "../repositories/SubscriptionRepository.js";
 import { authConfig } from "../../config/auth.js";
 
 interface IRequest {
@@ -14,6 +15,7 @@ interface IResponse {
         id: string;
         name: string;
         email: string;
+        subscriptionStatus: string;
     };
     token: string;
 }
@@ -40,11 +42,14 @@ class SessionsService {
             expiresIn: expiresIn as any,
         });
 
+        const subscription = await SubscriptionRepository.findByUserId(user.id);
+
         return {
             user: {
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                subscriptionStatus: subscription?.status || "PENDING",
             },
             token,
         };

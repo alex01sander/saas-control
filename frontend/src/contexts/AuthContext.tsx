@@ -13,6 +13,7 @@ interface AuthContextData {
     isAuthenticated: boolean;
     signIn: (credentials: object) => Promise<void>;
     signOut: () => void;
+    refreshUser: () => Promise<void>;
     loading: boolean;
 }
 
@@ -24,14 +25,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const isAuthenticated = !!user;
 
+    async function refreshUser() {
+        try {
+            const response = await api.get("/me");
+            setUser(response.data);
+        } catch {
+            signOut();
+        }
+    }
+
     useEffect(() => {
         const token = localStorage.getItem("@SaaSControl:token");
 
         if (token) {
-            api.get("/me")
-                .then((response) => setUser(response.data))
-                .catch(() => signOut())
-                .finally(() => setLoading(false));
+            refreshUser().finally(() => setLoading(false));
         } else {
             setLoading(false);
         }
@@ -52,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider
-            value={{ user, isAuthenticated, signIn, signOut, loading }}
+            value={{ user, isAuthenticated, signIn, signOut, refreshUser, loading }}
         >
             {children}
         </AuthContext.Provider>

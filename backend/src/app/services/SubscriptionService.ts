@@ -39,6 +39,23 @@ class SubscriptionService {
         }
         return subscription;
     }
+
+    async forceActivate(userId: string, planId: string) {
+        const subscription = await SubscriptionRepository.findByUserId(userId);
+
+        if (subscription) {
+            await SubscriptionRepository.update(userId, {
+                status: "ACTIVE",
+                planId,
+            });
+        } else {
+            await SubscriptionRepository.create({
+                userId,
+                planId,
+                status: "ACTIVE",
+            });
+        }
+    }
 }
 
 export default new SubscriptionService();
