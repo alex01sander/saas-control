@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { LayoutDashboard, BookOpen, User, CreditCard, LogOut, Crown } from "lucide-react";
+import { BarChart3, Users, User, CreditCard, LogOut } from "lucide-react";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
@@ -12,7 +12,6 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function AppLayout() {
     const { signOut, user } = useContext(AuthContext);
-    const isPremium = user?.subscriptionStatus === "ACTIVE";
 
     return (
         <div className="min-h-screen flex bg-gray-100">
@@ -28,16 +27,11 @@ export function AppLayout() {
                 {/* Navigation */}
                 <nav className="flex-1 p-4 space-y-1">
                     <NavLink to="/dashboard" className={navLinkClass}>
-                        <LayoutDashboard size={18} /> Dashboard
+                        <BarChart3 size={18} /> Dashboard
                     </NavLink>
-                    <NavLink to="/ebook" className={navLinkClass}>
-                        <BookOpen size={18} />
-                        <span>Ebook</span>
-                        {!isPremium && (
-                            <span title="Premium">
-                                <Crown size={13} className="ml-auto text-amber-500" />
-                            </span>
-                        )}
+                    <NavLink to="/admin/customers" className={navLinkClass}>
+                        <Users size={18} />
+                        <span>Clientes</span>
                     </NavLink>
                     <NavLink to="/profile" className={navLinkClass}>
                         <User size={18} /> Perfil
