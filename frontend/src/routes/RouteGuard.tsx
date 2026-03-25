@@ -5,11 +5,13 @@ import { AuthContext } from "../contexts/AuthContext";
 interface RouteGuardProps {
     isPrivate?: boolean;
     isSubscriptionRequired?: boolean;
+    children?: React.ReactNode;
 }
 
 export function RouteGuard({
     isPrivate = false,
     isSubscriptionRequired = false,
+    children,
 }: RouteGuardProps) {
     const { user, isAuthenticated, loading } = useContext(AuthContext);
 
@@ -29,5 +31,5 @@ export function RouteGuard({
         return <Navigate to="/plans" replace />;
     }
 
-    return <Outlet />;
+    return children ? <>{children}</> : <Outlet />;
 }

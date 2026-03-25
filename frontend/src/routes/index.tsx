@@ -7,7 +7,7 @@ import { AppLayout } from "../layouts/AppLayout";
 import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
 import { DashboardPage } from "../pages/Dashboard";
-import { AnalyticsPage } from "../pages/Analytics";
+import { EbookPage } from "../pages/Analytics";
 import { SuccessPage } from "../pages/Success";
 import { CancelPage } from "../pages/Cancel";
 import { PlansPage } from "../pages/Plans";
@@ -30,7 +30,14 @@ export function AppRoutes() {
                     <Route element={<AppLayout />}>
                         {" "}
                         <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/analytics" element={<AnalyticsPage />} />
+                        <Route
+                            path="/ebook"
+                            element={
+                                <RouteGuard isPrivate isSubscriptionRequired>
+                                    <EbookPage />
+                                </RouteGuard>
+                            }
+                        />
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/plans" element={<PlansPage />} />
                         <Route path="/success" element={<SuccessPage />} />

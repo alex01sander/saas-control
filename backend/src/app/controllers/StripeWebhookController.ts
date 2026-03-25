@@ -11,14 +11,21 @@ class StripeWebhookController {
 
         let event;
 
-        try {
-            event = stripe.webhooks.constructEvent(
-                req.body,
-                sig as string,
-                endpointSecret as string,
-            );
-        } catch (err: any) {
-            return res.status(400).send(`Webhook Error: ${err.message}`);
+        // Allow simulation via Postman in development if signature is missing
+        if (!sig && process.env.NODE_ENV !== "production") {
+            console.log("⚠️ Webhook simulation detected (Dev Mode)");
+            event = req.body;
+        } else {
+            try {
+                event = stripe.webhooks.constructEvent(
+                    req.body,
+                    sig as string,
+                    endpointSecret as string,
+                );
+            } catch (err: any) {
+                console.error(`❌ Webhook Error: ${err.message}`);
+                return res.status(400).send(`Webhook Error: ${err.message}`);
+            }
         }
 
         if (event.type === "checkout.session.completed") {

@@ -30,7 +30,7 @@ export function AppLayout() {
                     <NavLink to="/dashboard" className={navLinkClass}>
                         <LayoutDashboard size={18} /> Dashboard
                     </NavLink>
-                    <NavLink to="/analytics" className={navLinkClass}>
+                    <NavLink to="/ebook" className={navLinkClass}>
                         <BookOpen size={18} />
                         <span>Ebook</span>
                         {!isPremium && (

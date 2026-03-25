@@ -1,7 +1,7 @@
 import { PremiumFeature } from '../../components/PremiumFeature';
 import { BookOpen, Download } from 'lucide-react';
 
-export function AnalyticsPage() { // Keep it named AnalyticsPage for route convenience, or change it below
+export function EbookPage() {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-xl border border-gray-200">

@@ -1,9 +1,9 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
 }
 
 model Plan {
@@ -19,33 +19,27 @@ model Plan {
 }
 
 model User {
-  id           String @id @default(uuid())
-  name         String
-  email        String @unique
-  passwordHash String
-
-  stripeCustomerId String? @unique
-
-  subscription Subscription?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String        @id @default(uuid())
+  name             String
+  email            String        @unique
+  passwordHash     String
+  stripeCustomerId String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  subscription     Subscription?
 
   @@map("users")
 }
 
 model Subscription {
-  id     String @id @default(uuid())
-  status String @default("PENDING")
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  planId String
-  plan   Plan   @relation(fields: [planId], references: [id])
-
+  id        String   @id @default(uuid())
+  status    String   @default("PENDING")
+  userId    String   @unique
+  planId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  plan      Plan     @relation(fields: [planId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@map("subscriptions")
 }
