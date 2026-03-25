@@ -4,15 +4,15 @@ import { AuthContext } from "../contexts/AuthContext";
 
 import { Crown, Lock, Sparkles } from "lucide-react";
 
-interface PremiumGuardProps {
+interface PremiumFeatureProps {
     children: ReactNode;
 }
 
 /**
- * PremiumGuard - wraps any content that should only be visible to active subscribers.
+ * PremiumFeature - wraps any content that should only be visible to active subscribers.
  * If the user is NOT subscribed, it renders a beautiful paywall instead.
  */
-export function PremiumGuard({ children }: PremiumGuardProps) {
+export function PremiumFeature({ children }: PremiumFeatureProps) {
     const { user } = useContext(AuthContext);
 
     const isPremium = user?.subscriptionStatus === "ACTIVE";

@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { LayoutDashboard, BarChart3, User, CreditCard, LogOut, Crown } from "lucide-react";
+import { LayoutDashboard, BookOpen, User, CreditCard, LogOut, Crown } from "lucide-react";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
@@ -31,10 +31,12 @@ export function AppLayout() {
                         <LayoutDashboard size={18} /> Dashboard
                     </NavLink>
                     <NavLink to="/analytics" className={navLinkClass}>
-                        <BarChart3 size={18} />
-                        <span>Analytics</span>
+                        <BookOpen size={18} />
+                        <span>Ebook</span>
                         {!isPremium && (
-                            <Crown size={13} className="ml-auto text-amber-500" title="Premium" />
+                            <span title="Premium">
+                                <Crown size={13} className="ml-auto text-amber-500" />
+                            </span>
                         )}
                     </NavLink>
                     <NavLink to="/profile" className={navLinkClass}>
