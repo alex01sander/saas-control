@@ -1,14 +1,13 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthContext } from '../../contexts/AuthContext';
 import { profileFormSchema, ProfileFormData } from './schema';
 import { api } from '../../lib/axios';
-import { User, ShieldCheck, Mail, Camera, Save, RefreshCcw } from 'lucide-react';
+import { User, ShieldCheck, Mail, Camera, Save, UserCircle } from 'lucide-react';
 
 export function ProfilePage() {
-  const { user, refreshUser } = useContext(AuthContext);
-  const [isToggling, setIsToggling] = useState(false);
+  const { user, refreshUser, toggleRole } = useContext(AuthContext);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
@@ -25,18 +24,6 @@ export function ProfilePage() {
       await refreshUser();
     } catch (error) {
       alert('Erro ao atualizar perfil.');
-    }
-  }
-
-  async function handleToggleRole() {
-    try {
-      setIsToggling(true);
-      await api.patch('/users/role');
-      await refreshUser();
-    } catch (error) {
-      alert('Erro ao alternar papel.');
-    } finally {
-      setIsToggling(false);
     }
   }
 
@@ -66,17 +53,11 @@ export function ProfilePage() {
             
             <div className="mt-6 w-full pt-6 border-t border-gray-50 text-left space-y-4">
               <div>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Papel no Sistema</p>
-                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <span className="text-sm font-bold text-gray-700">{user?.role}</span>
-                  <button 
-                    onClick={handleToggleRole}
-                    disabled={isToggling}
-                    className="p-1.5 bg-white rounded-lg shadow-sm border border-gray-100 text-indigo-600 hover:bg-indigo-50 transition-all disabled:opacity-50"
-                    title="Alternar Admin/Cliente"
-                  >
-                    <RefreshCcw size={14} className={isToggling ? 'animate-spin' : ''} />
-                  </button>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Papel Atual</p>
+                <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                  user?.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
+                }`}>
+                  {user?.role}
                 </div>
               </div>
 
@@ -90,6 +71,37 @@ export function ProfilePage() {
                   {user?.subscriptionStatus || 'PENDENTE'}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Dev Switch (Developer Settings) */}
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <ShieldCheck size={20} className="text-amber-600" />
+              <h3 className="font-bold text-amber-900">Modo de Visualização</h3>
+            </div>
+            
+            <p className="text-xs text-amber-700 mb-6 leading-relaxed">
+              Alterne entre a visão de <strong>Dono (Admin)</strong> e <strong>Cliente</strong> para testar as permissões e fluxos.
+            </p>
+
+            <div className="flex bg-white p-1 rounded-xl border border-amber-200 w-full">
+              <button
+                onClick={() => user?.role !== 'ADMIN' && toggleRole()}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  user?.role === 'ADMIN' ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                <ShieldCheck size={14} /> Admin
+              </button>
+              <button
+                onClick={() => user?.role !== 'CLIENT' && toggleRole()}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  user?.role === 'CLIENT' ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                <UserCircle size={14} /> Cliente
+              </button>
             </div>
           </div>
         </div>

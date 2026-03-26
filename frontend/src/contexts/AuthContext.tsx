@@ -17,6 +17,7 @@ interface AuthContextData {
     signIn: (credentials: object) => Promise<void>;
     signOut: () => void;
     refreshUser: () => Promise<void>;
+    toggleRole: () => Promise<void>;
     loading: boolean;
 }
 
@@ -60,9 +61,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     }
 
+    async function toggleRole() {
+        if (!user) return;
+
+        const newRole: UserRole = user.role === "ADMIN" ? "CLIENT" : "ADMIN";
+
+        // Optimistic update
+        const oldUser = { ...user };
+        setUser({ ...user, role: newRole });
+
+        try {
+            await api.patch("/users/role");
+        } catch {
+            setUser(oldUser);
+            alert("Erro ao alternar papel no servidor.");
+        }
+    }
+
     return (
         <AuthContext.Provider
-            value={{ user, isAuthenticated, signIn, signOut, refreshUser, loading }}
+            value={{ 
+                user, 
+                isAuthenticated, 
+                signIn, 
+                signOut, 
+                refreshUser, 
+                toggleRole,
+                loading 
+            }}
         >
             {children}
         </AuthContext.Provider>
