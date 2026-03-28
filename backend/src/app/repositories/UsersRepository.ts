@@ -8,7 +8,19 @@ class UserRepository {
                 id: true,
                 name: true,
                 email: true,
+                stripeCustomerId: true,
                 createdAt: true,
+                subscription: {
+                    select: {
+                        status: true,
+                        updatedAt: true,
+                        plan: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
             },
             orderBy: {
                 createdAt: "desc",

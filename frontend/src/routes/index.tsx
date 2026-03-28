@@ -8,11 +8,13 @@ import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
 import { DashboardPage } from "../pages/Dashboard";
 import { CustomerManagement } from "../pages/Admin/Customers";
+import { FinanceManagement } from "../pages/Admin/Finance";
 import { SuccessPage } from "../pages/Success";
 import { CancelPage } from "../pages/Cancel";
 import { PlansPage } from "../pages/Plans";
 
 import { ProfilePage } from "../pages/Profile";
+import { EbookPage } from "../pages/Ebook";
 
 
 export function AppRoutes() {
@@ -38,6 +40,14 @@ export function AppRoutes() {
                                 </RouteGuard>
                             }
                         />
+                        <Route
+                            path="/admin/finance"
+                            element={
+                                <RouteGuard isPrivate roleRequired="ADMIN">
+                                    <FinanceManagement />
+                                </RouteGuard>
+                            }
+                        />
                         <Route path="/profile" element={<ProfilePage />} />
 
                         <Route
@@ -50,6 +60,14 @@ export function AppRoutes() {
                         />
                         <Route path="/success" element={<SuccessPage />} />
                         <Route path="/cancel" element={<CancelPage />} />
+                        <Route
+                            path="/app/ebook"
+                            element={
+                                <RouteGuard isPrivate roleRequired="CLIENT">
+                                    <EbookPage />
+                                </RouteGuard>
+                            }
+                        />
                     </Route>
                 </Route>
 

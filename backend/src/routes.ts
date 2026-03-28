@@ -6,6 +6,7 @@ import UsersController from "./app/controllers/UsersController.js";
 import SessionsController from "./app/controllers/SessionsController.js";
 import SubscriptionController from "./app/controllers/SubscriptionController.js";
 import StripeWebhookController from "./app/controllers/StripeWebhookController.js";
+import AdminStatsController from "./app/controllers/AdminStatsController.js";
 
 import { ensureAuthenticated } from "./middlewares/ensureAuthenticated.js";
 import { ensureAdmin } from "./middlewares/ensureAdmin.js";
@@ -97,6 +98,7 @@ router.patch("/users/role", UsersController.toggleRole);
  *         description: Lista de usuários
  */
 router.get("/users", ensureAdmin, UsersController.index);
+router.get("/admin/stats", ensureAdmin, AdminStatsController.index);
 
 /**
  * @swagger

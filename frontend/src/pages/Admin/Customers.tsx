@@ -1,48 +1,68 @@
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { api } from '../../lib/axios';
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  stripeCustomerId?: string;
+  createdAt: string;
+  subscription?: {
+    status: string;
+    updatedAt: string;
+    plan: {
+      name: string;
+    };
+  } | null;
+}
 
 export function CustomerManagement() {
-  const customers = [
-    {
-      id: '1',
-      name: 'Alex Sander',
-      email: 'alexsander01@hotmail.com',
-      avatar: 'AS',
-      plan: 'Premium Monthly',
-      status: 'ACTIVE',
-      lastBilling: '25/03/2026',
-      stripeId: 'cus_123'
-    },
-    {
-      id: '2',
-      name: 'Beatriz Silva',
-      email: 'beatriz.silva@email.com',
-      avatar: 'BS',
-      plan: 'Enterprise Yearly',
-      status: 'ACTIVE',
-      lastBilling: '20/03/2026',
-      stripeId: 'cus_456'
-    },
-    {
-      id: '3',
-      name: 'Carlos Oliveira',
-      email: 'carlos.o@dev.com',
-      avatar: 'CO',
-      plan: 'Free Trial',
-      status: 'PENDING',
-      lastBilling: '-',
-      stripeId: 'cus_789'
-    },
-    {
-      id: '4',
-      name: 'Daniele Rocha',
-      email: 'daniele.rocha@corp.com',
-      avatar: 'DR',
-      plan: 'Premium Monthly',
-      status: 'CANCELED',
-      lastBilling: '15/02/2026',
-      stripeId: 'cus_012'
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCustomers() {
+      try {
+        const response = await api.get('/users');
+        setCustomers(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar clientes:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+
+    loadCustomers();
+  }, []);
+
+  function handleViewOnStripe(stripeId?: string) {
+    if (!stripeId) {
+      alert('Este usuário ainda não possui um ID no Stripe.');
+      return;
+    }
+
+    // Stripe Test Dashboard URL - Change to live in production
+    const stripeUrl = `https://dashboard.stripe.com/test/customers/${stripeId}`;
+    window.open(stripeUrl, '_blank');
+  }
+
+  function getAvatar(name: string) {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  function formatDate(dateString?: string) {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  }
+
+  if (loading) {
+    return (
+      <div className="h-96 flex items-center justify-center">
+        <Loader2 className="animate-spin text-indigo-600" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
@@ -76,7 +96,7 @@ export function CustomerManagement() {
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-sm">
-                        {customer.avatar}
+                        {getAvatar(customer.name)}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-gray-800">{customer.name}</p>
@@ -85,31 +105,42 @@ export function CustomerManagement() {
                     </div>
                   </td>
                   <td className="p-4 text-sm text-gray-600 font-medium">
-                    {customer.plan}
+                    {customer.subscription?.plan?.name || 'Sem Plano'}
                   </td>
                   <td className="p-4">
                     <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider ${
-                      customer.status === 'ACTIVE' 
+                      customer.subscription?.status?.trim().toUpperCase() === 'ACTIVE' 
                         ? 'bg-green-100 text-green-700' 
-                        : customer.status === 'PENDING'
+                        : customer.subscription?.status?.trim().toUpperCase() === 'PENDING'
                         ? 'bg-amber-100 text-amber-700'
                         : 'bg-red-100 text-red-700'
                     }`}>
-                      {customer.status}
+                      {customer.subscription?.status?.trim().toUpperCase() || 'INATIVO'}
                     </span>
                   </td>
                   <td className="p-4 text-sm text-gray-500">
-                    {customer.lastBilling}
+                    {formatDate(customer.subscription?.updatedAt)}
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
-                       <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Ver no Stripe">
+                       <button 
+                        onClick={() => handleViewOnStripe(customer.stripeCustomerId)}
+                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" 
+                        title="Ver no Stripe"
+                       >
                          <ExternalLink size={18} />
                        </button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {customers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-gray-500">
+                    Nenhum assinante encontrado.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

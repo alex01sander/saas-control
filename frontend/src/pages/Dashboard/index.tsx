@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { api } from "../../lib/axios";
 import {
     BarChart3,
     TrendingUp,
@@ -14,14 +15,47 @@ import {
     ShieldCheck,
     ArrowRight,
     CreditCard,
-    User
+    User,
+    Loader2
 } from "lucide-react";
+
+interface AdminStats {
+    totalSubscribers: number;
+    mrr: number;
+    totalRevenue: number;
+    recentActivities: Array<{
+        user: string;
+        action: string;
+        time: string;
+        status: string;
+    }>;
+}
 
 export function DashboardPage() {
     const { user } = useContext(AuthContext);
+    const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const isPremium = user?.subscriptionStatus === "ACTIVE";
     const isPending = user?.subscriptionStatus === "PENDING";
+
+    useEffect(() => {
+        if (user?.role === "ADMIN") {
+            async function loadStats() {
+                try {
+                    const response = await api.get('/admin/stats');
+                    setAdminStats(response.data);
+                } catch (error) {
+                    console.error('Erro ao carregar stats:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+            loadStats();
+        } else {
+            setLoading(false);
+        }
+    }, [user]);
 
     const statusConfig: any = {
         ACTIVE: {
@@ -50,34 +84,61 @@ export function DashboardPage() {
     const status = isPremium ? "ACTIVE" : isPending ? "PENDING" : "FREE";
     const config = statusConfig[status];
 
-    const stats = [
-        { 
-            label: 'MRR (Receita Mensal)', 
-            value: 'R$ 12.450', 
-            grow: '+12%', 
-            isPositive: true,
-            icon: <DollarSign size={24} className="text-green-600" />,
-            bgColor: "bg-green-50"
-        },
-        { 
-            label: 'Assinantes Ativos', 
-            value: '148', 
-            grow: '+5%', 
-            isPositive: true,
-            icon: <Users size={24} className="text-blue-600" />,
-            bgColor: "bg-blue-50"
-        },
-        { 
-            label: 'Churn Rate (Cancelamentos)', 
-            value: '2.4%', 
-            grow: '-1%', 
-            isPositive: true, // Churn down is positive
-            icon: <TrendingUp size={24} className="text-purple-600" />,
-            bgColor: "bg-purple-50"
-        },
-    ];
+    function formatPrice(value: number) {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(value);
+    }
+
+    function getTimeAgo(dateString: string) {
+        const now = new Date();
+        const past = new Date(dateString);
+        const diffInMinutes = Math.floor((now.getTime() - past.getTime()) / 60000);
+
+        if (diffInMinutes < 1) return 'Agora';
+        if (diffInMinutes < 60) return `${diffInMinutes}m`;
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) return `${diffInHours}h`;
+        return past.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    }
+
+    if (loading) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <Loader2 className="animate-spin text-indigo-600" size={40} />
+            </div>
+        );
+    }
 
     if (user?.role === "ADMIN") {
+        const stats = [
+            { 
+                label: 'MRR (Receita Mensal)', 
+                value: formatPrice(adminStats?.mrr || 0), 
+                grow: '+100%', 
+                isPositive: true,
+                icon: <DollarSign size={24} className="text-green-600" />,
+                bgColor: "bg-green-50"
+            },
+            { 
+                label: 'Assinantes Ativos', 
+                value: String(adminStats?.totalSubscribers || 0), 
+                grow: '+100%', 
+                isPositive: true,
+                icon: <Users size={24} className="text-blue-600" />,
+                bgColor: "bg-blue-50"
+            },
+            { 
+                label: 'Churn Rate', 
+                value: '0%', 
+                grow: '0%', 
+                isPositive: true,
+                icon: <TrendingUp size={24} className="text-purple-600" />,
+                bgColor: "bg-purple-50"
+            },
+        ];
+
         return (
             <div className="space-y-8 animate-in fade-in duration-700">
                 {/* Admin Header */}
@@ -119,11 +180,11 @@ export function DashboardPage() {
 
                 {/* Business Insights Placeholder */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col">
                         <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-6">
                             <BarChart3 size={20} className="text-indigo-600" /> Crescimento da Receita
                         </h3>
-                        <div className="h-64 bg-gray-50 rounded-xl flex items-end justify-between p-6 gap-2">
+                        <div className="flex-1 bg-gray-50 rounded-xl flex items-end justify-between p-6 gap-2">
                             {[30, 45, 35, 60, 55, 80, 75, 90, 85, 100].map((h, i) => (
                                 <div key={i} className="w-full bg-indigo-200 rounded-t-lg hover:bg-indigo-600 transition-all cursor-pointer" style={{ height: `${h}%` }}></div>
                             ))}
@@ -138,21 +199,19 @@ export function DashboardPage() {
                             <Zap size={20} className="text-amber-500" /> Atividades Recentes
                         </h3>
                         <div className="space-y-6">
-                            {[
-                                { user: "Alex Sander", action: "Assinou o plano Premium", time: "Há 2 minutos", color: "bg-green-500" },
-                                { user: "Beatriz Silva", action: "Upgrade para Enterprise", time: "Há 45 minutos", color: "bg-indigo-500" },
-                                { user: "Carlos Oliveira", action: "Novo cadastro realizado", time: "Há 2 horas", color: "bg-amber-500" },
-                                { user: "Daniele Rocha", action: "Cancelou a renovação", time: "Há 5 horas", color: "bg-red-500" },
-                            ].map((activity, i) => (
+                            {adminStats?.recentActivities.map((activity, i) => (
                                 <div key={i} className="flex gap-4 items-start">
-                                    <div className={`w-2 h-2 mt-2 rounded-full ${activity.color}`}></div>
+                                    <div className={`w-2 h-2 mt-2 rounded-full ${activity.status === 'ACTIVE' ? 'bg-green-500' : 'bg-amber-500'}`}></div>
                                     <div className="flex-1">
                                         <p className="text-sm font-bold text-gray-800">{activity.user}</p>
                                         <p className="text-xs text-gray-500">{activity.action}</p>
                                     </div>
-                                    <span className="text-xs text-gray-400">{activity.time}</span>
+                                    <span className="text-xs text-gray-400">{getTimeAgo(activity.time)}</span>
                                 </div>
                             ))}
+                            {(!adminStats?.recentActivities || adminStats.recentActivities.length === 0) && (
+                                <p className="text-sm text-gray-500 text-center py-4">Nenhuma atividade recente.</p>
+                            )}
                         </div>
                     </div>
                 </div>

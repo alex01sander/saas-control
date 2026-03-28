@@ -12,7 +12,15 @@ interface IUserResponse {
     id: string;
     name: string;
     email: string;
+    stripeCustomerId?: string | null;
     createdAt?: Date;
+    subscription?: {
+        status: string;
+        updatedAt: Date;
+        plan: {
+            name: string;
+        };
+    } | null;
 }
 
 interface IUserUpdate {
