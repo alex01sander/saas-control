@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { api } from "../lib/axios";
 
 export type UserRole = "ADMIN" | "CLIENT";
@@ -29,14 +29,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const isAuthenticated = !!user;
 
-    async function refreshUser() {
+    const signOut = useCallback(() => {
+        localStorage.removeItem("@SaaSControl:token");
+        setUser(null);
+    }, []);
+
+    const refreshUser = useCallback(async () => {
         try {
             const response = await api.get("/me");
             setUser(response.data);
         } catch {
             signOut();
         }
-    }
+    }, [signOut]);
 
     useEffect(() => {
         const token = localStorage.getItem("@SaaSControl:token");
@@ -46,20 +51,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
             setLoading(false);
         }
-    }, []);
+    }, [refreshUser]);
 
-    async function signIn(credentials: object) {
+    const signIn = useCallback(async (credentials: object) => {
         const response = await api.post("/sessions", credentials);
         const { token, user: userData } = response.data;
 
         localStorage.setItem("@SaaSControl:token", token);
         setUser(userData);
-    }
-
-    function signOut() {
-        localStorage.removeItem("@SaaSControl:token");
-        setUser(null);
-    }
+    }, []);
 
     async function toggleRole() {
         if (!user) return;

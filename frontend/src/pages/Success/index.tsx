@@ -13,36 +13,53 @@ export function SuccessPage() {
     useEffect(() => {
         let attempts = 0;
         const maxAttempts = 5;
+        let interval: NodeJS.Timeout;
 
         const checkStatus = async () => {
-            await refreshUser();
             attempts += 1;
-
-            if (user?.subscriptionStatus === "ACTIVE" || attempts >= maxAttempts) {
-                setIsChecking(false);
-            }
+            console.log(`Verifying subscription status... attempt ${attempts}`);
+            
+            // Note: We don't check 'user' from dependencies here,
+            // we call refreshUser and let it update the global state.
+            await refreshUser();
         };
 
-        const interval = setInterval(() => {
-            if (user?.subscriptionStatus !== "ACTIVE" && attempts < maxAttempts) {
-                checkStatus();
-            } else {
-                clearInterval(interval);
-                setIsChecking(false);
-            }
-        }, 2000);
+        // Start polling if not already active
+        if (user?.subscriptionStatus !== "ACTIVE") {
+            interval = setInterval(() => {
+                if (attempts < maxAttempts) {
+                    checkStatus();
+                } else {
+                    clearInterval(interval);
+                    setIsChecking(false);
+                }
+            }, 2000);
+        } else {
+            setIsChecking(false);
+        }
 
         // Initial check
         checkStatus();
 
-        return () => clearInterval(interval);
-    }, [refreshUser, user?.subscriptionStatus]);
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+        // We only want this effect to run once on mount.
+        // refreshUser is stable from AuthContext.
+    }, [refreshUser]);
+
+    // Separate effect to handle the state change when user becomes ACTIVE
+    useEffect(() => {
+        if (user?.subscriptionStatus === "ACTIVE") {
+            setIsChecking(false);
+        }
+    }, [user?.subscriptionStatus]);
 
     useEffect(() => {
         if (!isChecking) {
             const timer = setTimeout(() => {
                 navigate("/dashboard");
-            }, 8000);
+            }, 5000);
             return () => clearTimeout(timer);
         }
     }, [isChecking, navigate]);
