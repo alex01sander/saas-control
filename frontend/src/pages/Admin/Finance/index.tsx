@@ -1,6 +1,7 @@
 import { DollarSign, TrendingUp, Users, ArrowUpRight, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../../../lib/axios';
+import { getFakeAdminStats } from '../../../lib/fakeData';
 
 interface Stats {
   totalSubscribers: number;
@@ -22,9 +23,15 @@ export function FinanceManagement() {
     async function loadStats() {
       try {
         const response = await api.get('/admin/stats');
-        setStats(response.data);
+        
+        if (response.data.totalSubscribers === 0 && response.data.mrr === 0) {
+            setStats(getFakeAdminStats());
+        } else {
+            setStats(response.data);
+        }
       } catch (error) {
         console.error('Erro ao carregar finanças:', error);
+        setStats(getFakeAdminStats());
       } finally {
         setLoading(false);
       }

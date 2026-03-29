@@ -1,21 +1,7 @@
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/axios';
-
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  stripeCustomerId?: string;
-  createdAt: string;
-  subscription?: {
-    status: string;
-    updatedAt: string;
-    plan: {
-      name: string;
-    };
-  } | null;
-}
+import { Customer, generateFakeCustomers } from '../../lib/fakeData';
 
 export function CustomerManagement() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -25,9 +11,16 @@ export function CustomerManagement() {
     async function loadCustomers() {
       try {
         const response = await api.get('/users');
-        setCustomers(response.data);
+        
+        // If there are no real customers (or just 1 admin), add fake ones to the view
+        if (response.data.length <= 1) {
+            setCustomers([...response.data, ...generateFakeCustomers(10)]);
+        } else {
+            setCustomers(response.data);
+        }
       } catch (error) {
         console.error('Erro ao carregar clientes:', error);
+        setCustomers(generateFakeCustomers(10));
       } finally {
         setLoading(false);
       }
@@ -36,9 +29,19 @@ export function CustomerManagement() {
     loadCustomers();
   }, []);
 
+  function handleGenerateFake() {
+    const fakes = generateFakeCustomers(10);
+    setCustomers((prev) => [...fakes, ...prev]);
+  }
+
   function handleViewOnStripe(stripeId?: string) {
     if (!stripeId) {
       alert('Este usuário ainda não possui um ID no Stripe.');
+      return;
+    }
+
+    if (stripeId.startsWith('cus_fake_')) {
+      alert('Este é um cliente fictício, não possui perfil real no Stripe.');
       return;
     }
 
@@ -72,6 +75,13 @@ export function CustomerManagement() {
           <p className="text-gray-500 text-sm">Monitore status de pagamento e planos ativos no Stripe.</p>
         </div>
         <div className="flex gap-2">
+           <button 
+             onClick={handleGenerateFake}
+             className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100 transition-colors shadow-sm"
+           >
+             <Users size={16} />
+             Gerar Fictícios
+           </button>
            <button className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm">
              Exportar CSV
            </button>
@@ -95,9 +105,17 @@ export function CustomerManagement() {
                 <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-sm">
-                        {getAvatar(customer.name)}
-                      </div>
+                      {customer.avatarUrl ? (
+                        <img 
+                          src={customer.avatarUrl} 
+                          alt={customer.name} 
+                          className="w-10 h-10 rounded-full object-cover shadow-sm bg-gray-50 border border-gray-100" 
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-sm shadow-sm border border-indigo-50">
+                          {getAvatar(customer.name)}
+                        </div>
+                      )}
                       <div>
                         <p className="text-sm font-bold text-gray-800">{customer.name}</p>
                         <p className="text-xs text-gray-500">{customer.email}</p>
@@ -113,7 +131,9 @@ export function CustomerManagement() {
                         ? 'bg-green-100 text-green-700' 
                         : customer.subscription?.status?.trim().toUpperCase() === 'PENDING'
                         ? 'bg-amber-100 text-amber-700'
-                        : 'bg-red-100 text-red-700'
+                        : customer.subscription?.status?.trim().toUpperCase() === 'CANCELED' || customer.subscription?.status?.trim().toUpperCase() === 'INACTIVE'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-gray-100 text-gray-700'
                     }`}>
                       {customer.subscription?.status?.trim().toUpperCase() || 'INATIVO'}
                     </span>

@@ -18,6 +18,7 @@ import {
     User,
     Loader2
 } from "lucide-react";
+import { getFakeAdminStats } from "../../lib/fakeData";
 
 interface AdminStats {
     totalSubscribers: number;
@@ -44,9 +45,14 @@ export function DashboardPage() {
             async function loadStats() {
                 try {
                     const response = await api.get('/admin/stats');
-                    setAdminStats(response.data);
+                    if (response.data.totalSubscribers === 0 && response.data.mrr === 0) {
+                        setAdminStats(getFakeAdminStats());
+                    } else {
+                        setAdminStats(response.data);
+                    }
                 } catch (error) {
                     console.error('Erro ao carregar stats:', error);
+                    setAdminStats(getFakeAdminStats());
                 } finally {
                     setLoading(false);
                 }
