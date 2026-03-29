@@ -52,10 +52,20 @@ class StripeService {
         const stripeCustomerId = session.customer as string;
 
         if (userId && planId) {
-            await SubscriptionRepository.update(userId, {
-                status: "ACTIVE",
-                planId: planId,
-            });
+            const existingSubscription = await SubscriptionRepository.findByUserId(userId);
+
+            if (existingSubscription) {
+                await SubscriptionRepository.update(userId, {
+                    status: "ACTIVE",
+                    planId: planId,
+                });
+            } else {
+                await SubscriptionRepository.create({
+                    userId,
+                    planId,
+                    status: "ACTIVE",
+                });
+            }
 
             await UsersRepository.update(userId, {
                 stripeCustomerId: stripeCustomerId,
