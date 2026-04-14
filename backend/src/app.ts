@@ -13,13 +13,14 @@ const port = process.env["PORT"] || 3000;
 app.use(cors());
 
 app.use((req, res, next) => {
-    if (req.originalUrl === "/webhooks/stripe") {
+    if (req.originalUrl === "/webhooks/stripe" || req.originalUrl === "/api/webhooks/stripe") {
         next();
     } else {
         express.json()(req, res, next);
     }
 });
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api", router);
 app.use(router);
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
